@@ -128,7 +128,7 @@ router.get("/occurrences", (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    //test
+    //test 2
     occurrenceService.getOccurrenceById(req.params.id)
       .then(result => {
         if (result.length) {
