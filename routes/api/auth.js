@@ -34,7 +34,8 @@ router.post("/login", (req, res) => {
           users_id: result.users_id,
           registration: result.registration,
           email: result.email,
-          name: result.name
+          name: result.name,
+          level: result.level
         };
 
         let token = jwt.sign(tokenData, PRIVATE_KEY, { expiresIn: "1h" });
@@ -44,6 +45,7 @@ router.post("/login", (req, res) => {
           users_id: result.users_id,
           email: result.email,
           name: result.name,
+          level: result.level,
           token
         });
       } else {
@@ -67,7 +69,8 @@ router.get("/login", (req, res) => {
           users_id: result.users_id,
           registration: result.registration,
           email: result.email,
-          name: result.name
+          name: result.name,
+          level: result.level
         };
 
         let token = jwt.sign(tokenData, PRIVATE_KEY, { expiresIn: "1h" });
@@ -77,6 +80,7 @@ router.get("/login", (req, res) => {
           users_id: result.users_id,
           email: result.email,
           name: result.name,
+          level: result.level,
           token
         });
       } else {

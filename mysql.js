@@ -6,12 +6,12 @@ const mysql = require("mysql2");
 //   database: "basebr",
 //   password: "qw12!@QW"
 // });
-/* 
+ 
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "sistran",
+  user: "root",
   database: "apibasebr",
-  password: '@#Stasera102030',
+  password: '',
 
   typeCast: function (field, next) {
     if (field.type === 'TINY' && field.length === 1) {
@@ -24,7 +24,8 @@ const connection = mysql.createConnection({
     }
   },
   multipleStatements:true
-}); */
+}); 
+/*
 
  const connection = mysql.createConnection({
    host: "localhost",
@@ -40,5 +41,7 @@ const connection = mysql.createConnection({
   },
   multipleStatements:true
  });
+
+ */
 
 module.exports = connection;

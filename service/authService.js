@@ -18,24 +18,26 @@ module.exports = {
     if (Array.isArray(user)) {
       values = user.map((u) => [
         u.users_id,
-        u.registration,
+        u.email,
         md5(u.password),
+        u.registration,
         u.name,
-        u.cpf,
         u.fixed_team,
         u.variable_team,
+        u.level,
         u.sector
       ]);
     } else {
       values = [
         [
           user.users_id,
-          user.registration,
+          user.email,
           md5(user.password),
+          user.registration,
           user.name,
-          user.cpf,
           user.fixed_team,
           user.variable_team,
+          user.level,
           user.sector
         ]
       ];
@@ -43,7 +45,7 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       conn.query(
-        "INSERT INTO users (users_id, email, password, name, cpf, my_team, service_team, sector) VALUES ?",
+        "INSERT INTO users (users_id, email, password, registration, name, fixed_team, variable_team, level, sector) VALUES ?",
         [values],
         (err, result) => {
           if (err) {
