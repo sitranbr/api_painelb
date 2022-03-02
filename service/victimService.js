@@ -10,10 +10,11 @@ module.exports = {
         v.victim_id,
         v.name,
         v.genre,
+        v.birthdate,
         v.document_type,
         v.document_number,
         v.address,
-        v.status_victim,
+        v.victim_status,
         v.occurrence_id
       ]);
     } else {
@@ -22,10 +23,11 @@ module.exports = {
           victims.victim_id,
           victims.name,
           victims.genre,
+          victims.birthdate,
           victims.document_type,
           victims.document_number,
           victims.address,
-          victims.status_victim,
+          victims.victim_status,
           victims.occurrence_id
         ]
       ];
@@ -33,7 +35,7 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       conn.query(
-        "INSERT INTO occurrence_victim ( victim_id, name, genre, document_type, document_number, address, status_victim, occurrence_id) VALUES ?",
+        "INSERT INTO occurrence_victim (victim_id, name, genre, birthdate, document_type, document_number, address, victim_status, occurrence_id) VALUES ?",
         [values],
         (err, result) => {
           if (err) {
@@ -96,6 +98,7 @@ module.exports = {
       "victim_id",
       "name",
       "genre",
+      "birthdate",
       "document_type",
       "document_number",
       "address",

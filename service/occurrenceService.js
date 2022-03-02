@@ -3,10 +3,10 @@ const fs = require("fs");
 const { options } = require("../app");
 
 module.exports = {
-  saveOccurrence: occurrence => {
+  saveOccurrence: (occurrence) => {
     let values;
     if (Array.isArray(occurrence)) {
-      values = occurrence.map(o => [
+      values = occurrence.map((o) => [
         o.occurrence_id,
         o.has_victim,
         o.has_witness,
@@ -16,7 +16,7 @@ module.exports = {
         o.date,
         o.time,
         o.description,
-        o.users_id
+        o.users_id,
       ]);
     } else {
       values = [
@@ -30,8 +30,8 @@ module.exports = {
           occurrence.date,
           occurrence.time,
           occurrence.description,
-          occurrence.users_id
-        ]
+          occurrence.users_id,
+        ],
       ];
     }
 
@@ -111,10 +111,11 @@ module.exports = {
                                           'victim_id', ov.victim_id, 
                                           'name', ov.name, 
                                           'genre', ov.genre, 
+                                          'birthdate', ov.birthdate,
                                           'document_type', ov.document_type, 
                                           'document_number', ov.document_number, 
                                           'address', ov.address, 
-                                          'status_victim', ov.status_victim, 
+                                          'victim_status', ov.victim_status,
                                           'occurrence_id', ov.occurrence_id
                                       )
                                      ),
@@ -179,7 +180,7 @@ module.exports = {
     });
   },
 
-  getOccurrenceById: id => {
+  getOccurrenceById: (id) => {
     return new Promise((resolve, reject) => {
       var options = `SELECT 
       CASE 
@@ -231,11 +232,12 @@ module.exports = {
                                           'id', ov.id, 
                                           'victim_id', ov.victim_id, 
                                           'name', ov.name, 
-                                          'genre', ov.genre, 
+                                          'genre', ov.genre,
+                                          'birthdate', ov.birthdate,                           
                                           'document_type', ov.document_type, 
                                           'document_number', ov.document_number, 
                                           'address', ov.address, 
-                                          'status_victim', ov.status_victim, 
+                                          'victim_status', ov.victim_status,
                                           'occurrence_id', ov.occurrence_id
                                       )
                                      ),
@@ -288,28 +290,156 @@ module.exports = {
       LEFT JOIN occurrence_victim ov ON (ov.occurrence_id = oc.occurrence_id) 
       LEFT JOIN occurrence_witness ow ON (ow.occurrence_id = oc.occurrence_id) 
       LEFT JOIN vehicle_conductor vc ON (vc.occurrence_id = oc.occurrence_id)
-      WHERE oc.occurrence_id = ? GROUP BY oc.id` ;
-      
+      WHERE oc.occurrence_id = ? GROUP BY oc.id ORDER BY oc.id DESC`;
 
-      conn.query(
-        options,
-        [id],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
+      conn.query(options, [id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
         }
-      );
+      });
+    });
+  },
+
+  getOccurrenceByUser: (users_id) => {
+    return new Promise((resolve, reject) => {
+      var options = `SELECT 
+      CASE 
+      WHEN COUNT(oc.id) = 0 
+      THEN JSON_OBJECT()
+      ELSE JSON_OBJECT(
+          'id', oc.id,
+          'occurrence_id', oc.occurrence_id, 
+          'has_victim', oc.has_victim,
+          'has_witness',  oc.has_witness, 
+          'occurrence_type', oc.occurrence_type, 
+          'address', oc.address, 
+          'perimeter', oc.perimeter, 
+          'date', oc.date, 
+          'time', oc.time, 
+          'description', oc.description, 
+          'users_id', oc.users_id
+      )
+      END AS occurrence,
+      
+      CASE 
+      WHEN COUNT(op.id) = 0 
+      THEN JSON_ARRAY()
+      ELSE CAST(CONCAT('[',
+                       GROUP_CONCAT(DISTINCT 
+                                    JSON_OBJECT(
+                                        'id', 
+                                         op.id, 
+                                        'name', 
+                                         op.name, 
+                                        'photo_id', 
+                                         op.photo_id, 
+                                        'photo', 
+                                         op.photo, 
+                                        'occurrence_id', 
+                                         op.occurrence_id
+                                    )
+                                   ),
+                       ']'
+                      ) AS JSON)
+      END AS occurrence_photos,
+       
+      CASE 
+      WHEN COUNT(ov.id) = 0 
+      THEN JSON_ARRAY()
+      ELSE  CAST( CONCAT('[',
+                         GROUP_CONCAT(DISTINCT 
+                                      JSON_OBJECT( 
+                                          'id', ov.id, 
+                                          'victim_id', ov.victim_id, 
+                                          'name', ov.name, 
+                                          'genre', ov.genre,
+                                          'birthdate', ov.birthdate,                           
+                                          'document_type', ov.document_type, 
+                                          'document_number', ov.document_number, 
+                                          'address', ov.address, 
+                                          'victim_status', ov.victim_status,
+                                          'occurrence_id', ov.occurrence_id
+                                      )
+                                     ),
+                         ']'
+                        )   AS JSON)
+      END AS occurrence_victim,
+      CASE 
+      WHEN COUNT(ow.id) = 0
+      THEN JSON_ARRAY()
+      ELSE  CAST( CONCAT('[',GROUP_CONCAT(DISTINCT 
+                                          JSON_OBJECT( 
+                                              'id', ow.id, 
+                                              'witness_id', ow.witness_id, 
+                                              'name', ow.name, 
+                                              'document_type', ow.document_type, 
+                                              'document_number', ow.document_number, 
+                                              'address', ow.address, 
+                                              'occurrence_id', ow.occurrence_id
+                                          )
+                                         ),
+                         ']'
+                        ) AS JSON)
+      END AS occurrence_witness, 
+        
+      CASE WHEN  COUNT(vc.id) = 0
+      THEN JSON_ARRAY()
+      ELSE CAST( CONCAT('[',GROUP_CONCAT(DISTINCT 
+                                         JSON_OBJECT(
+                                             'id', vc.id, 
+                                             'vehicle_id', vc.vehicle_id, 
+                                             'plate_vehicle', vc.plate_vehicle, 
+                                             'doc_vehicle_type', vc.doc_vehicle_type, 
+                                             'doc_vehicle_number', vc.doc_vehicle_number, 
+                                             'vehicle_type', vc.vehicle_type, 
+                                             'damage_category', vc.damage_category,
+                                             'vehicle_procedure', vc.vehicle_procedure,
+                                             'driver_name', vc.driver_name,
+                                             'driver_document_type',  vc.driver_document_type,
+                                             'driver_document_number', vc.driver_document_number,
+                                             'driver_procedure',  vc.driver_procedure,
+                                             'occurrence_id', vc.occurrence_id
+                                         )
+                                        ),
+                        ']'
+                       ) AS JSON)
+      END AS vehicle_conductor
+      
+      FROM occurrence AS oc 
+      LEFT JOIN occurrence_photos op ON (op.occurrence_id = oc.occurrence_id) 
+      LEFT JOIN occurrence_victim ov ON (ov.occurrence_id = oc.occurrence_id) 
+      LEFT JOIN occurrence_witness ow ON (ow.occurrence_id = oc.occurrence_id) 
+      LEFT JOIN vehicle_conductor vc ON (vc.occurrence_id = oc.occurrence_id)
+      WHERE oc.users_id = ? GROUP BY oc.id ORDER BY oc.id DESC`;
+
+      conn.query(options, [users_id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
   },
 
   updateOccurrence: (occurrenceId, newOccurrence) => {
     let toBeUpdated = {};
-    let allowedCollumns = [`occurrence_id`, `has_victim`, `has_witness`, `occurrence_type`, `address`, `perimeter`, `date`, `time`, `description`, `users_id`];
+    let allowedCollumns = [
+      `occurrence_id`,
+      `has_victim`,
+      `has_witness`,
+      `occurrence_type`,
+      `address`,
+      `perimeter`,
+      `date`,
+      `time`,
+      `description`,
+      `users_id`,
+    ];
 
-    allowedCollumns.forEach(columnName => {
+    allowedCollumns.forEach((columnName) => {
       if (columnName in newOccurrence) {
         toBeUpdated[columnName] = newOccurrence[columnName];
       }
@@ -329,16 +459,19 @@ module.exports = {
     });
   },
 
-  deleteOccurrence: id => {
+  deleteOccurrence: (id) => {
     return new Promise((resolve, reject) => {
-      conn.query("DELETE from occurrence WHERE occurrence_id = ?", [id], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+      conn.query(
+        "DELETE from occurrence WHERE occurrence_id = ?",
+        [id],
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
         }
-      });
+      );
     });
-  }
+  },
 };
-

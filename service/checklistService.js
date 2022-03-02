@@ -1,10 +1,10 @@
 const conn = require("./../mysql");
 
 module.exports = {
-  saveChecklist: check => {
+  saveChecklist: (check) => {
     let values;
     if (Array.isArray(check)) {
-      values = check.map(c => [
+      values = check.map((c) => [
         c.checklist_id,
         c.driver,
         c.team_service,
@@ -39,7 +39,8 @@ module.exports = {
         c.new_jersey_quantities,
         c.handle,
         c.handle_quantities,
-        c.users_id
+        c.observations,
+        c.users_id,
       ]);
     } else {
       values = [
@@ -78,14 +79,15 @@ module.exports = {
           check.new_jersey_quantities,
           check.handle,
           check.handle_quantities,
-          check.users_id
-        ]
+          check.observations,
+          check.users_id,
+        ],
       ];
     }
 
     return new Promise((resolve, reject) => {
       conn.query(
-        "INSERT INTO checklist (checklist_id, driver, team_service, plate, prisma, check_date, departure_time, return_time, km_departure, km_return, output_fuel_quantity, return_fuel_quantity, carpet, tire_iron, triangue, monkey, front_lighting_system, back_lighting_system, sirene, flashing, supply_card, crlv, glacier, etilometer, pneus, stereo, cones, cones_quantities, super_cones, super_cones_quantities, new_jersey, new_jersey_quantities, handle, handle_quantities, users_id) VALUES ?",
+        "INSERT INTO checklist (checklist_id, driver, team_service, plate, prisma, check_date, departure_time, return_time, km_departure, km_return, output_fuel_quantity, return_fuel_quantity, carpet, tire_iron, triangue, monkey, front_lighting_system, back_lighting_system, sirene, flashing, supply_card, crlv, glacier, etilometer, pneus, stereo, cones, cones_quantities, super_cones, super_cones_quantities, new_jersey, new_jersey_quantities, handle, handle_quantities, observations, users_id) VALUES ?",
         [values],
         (err, result) => {
           if (err) {
@@ -140,6 +142,7 @@ module.exports = {
           'new_jersey_quantities',  cl.new_jersey_quantities ,
           'handle',  cl.handle ,
           'handle_quantities',  cl.handle_quantities,
+          'observations',  cl.observations,
           'users_id', cl.users_id
       )
       END AS checklist,
@@ -163,7 +166,8 @@ module.exports = {
       
       FROM checklist AS cl 
       LEFT JOIN checklist_photos cp ON (cp.checklist_id = cl.checklist_id)
-      GROUP BY cl.id ORDER BY cl.id DESC`;
+      GROUP BY cl.id 
+      ORDER BY cl.id DESC`;
 
       conn.query(options, (err, result) => {
         if (err) {
@@ -175,9 +179,8 @@ module.exports = {
     });
   },
 
-  getChecklistById: id => {
+  getChecklistById: (id) => {
     return new Promise((resolve, reject) => {
-
       var options = `SELECT 
       CASE 
       WHEN COUNT(cl.id) = 0 
@@ -218,6 +221,7 @@ module.exports = {
           'new_jersey_quantities',  cl.new_jersey_quantities ,
           'handle',  cl.handle ,
           'handle_quantities',  cl.handle_quantities,
+          'observations',  cl.observations,
           'users_id', cl.users_id
       )
       END AS checklist,
@@ -241,24 +245,141 @@ module.exports = {
       
       FROM checklist AS cl 
       LEFT JOIN checklist_photos cp ON (cp.checklist_id = cl.checklist_id)
-      WHERE cl.checklist_id = ? GROUP BY cl.id` ;
+      WHERE cl.checklist_id = ? 
+      GROUP BY cl.id 
+      ORDER BY cl.id DESC`;
 
-      conn.query(options, [id],
-        (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
+      conn.query(options, [id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
         }
-      );
+      });
+    });
+  },
+
+  getChecklistByUserId: (users_id) => {
+    return new Promise((resolve, reject) => {
+      var options = `SELECT 
+      CASE 
+      WHEN COUNT(cl.id) = 0 
+      THEN JSON_OBJECT()
+      ELSE JSON_OBJECT(
+          'id', cl.id,
+          'checklist_id', cl.checklist_id,
+          'driver',  cl.driver ,
+          'team_service',  cl.team_service ,
+          'plate', cl.plate ,
+          'prisma',  cl.prisma ,
+          'check_date',  cl.check_date ,
+          'departure_time',  cl.departure_time ,
+          'return_time',  cl.return_time ,
+          'km_departure',  cl.km_departure ,
+          'km_return', cl.km_return ,
+          'output_fuel_quantity', cl.output_fuel_quantity ,
+          'return_fuel_quantity',  cl.return_fuel_quantity ,
+          'carpet', cl.carpet ,
+          'tire_iron',  cl.tire_iron ,
+          'triangue',   cl.triangue ,
+          'monkey',  cl.monkey ,
+          'front_lighting_system',  cl.front_lighting_system ,
+          'back_lighting_system',  cl.back_lighting_system ,
+          'sirene',  cl.sirene ,
+          'flashing',  cl.flashing ,
+          'supply_card', cl.supply_card,
+          'crlv',  cl.crlv ,
+          'glacier',  cl.glacier ,
+          'etilometer',  cl.etilometer ,
+          'pneus',  cl.pneus ,
+          'stereo',  cl.stereo ,
+          'cones',  cl.cones ,
+          'cones_quantities',  cl.cones_quantities ,
+          'super_cones',  cl.super_cones ,
+          'super_cones_quantities',  cl.super_cones_quantities ,
+          'new_jersey',  cl.new_jersey ,
+          'new_jersey_quantities',  cl.new_jersey_quantities ,
+          'handle',  cl.handle ,
+          'handle_quantities',  cl.handle_quantities,
+          'observations',  cl.observations,
+          'users_id', cl.users_id
+      )
+      END AS checklist,
+    
+      CASE 
+      WHEN COUNT(cp.id) = 0 
+      THEN JSON_ARRAY()
+      ELSE CAST(CONCAT('[',
+                       GROUP_CONCAT(DISTINCT 
+                                    JSON_OBJECT(
+                                        'id', cp.id, 
+                                        'name', cp.name, 
+                                        'photo_id', cp.photo_id, 
+                                        'photo', cp.photo, 
+                                        'checklist_id',cp.checklist_id
+                                    )
+                                   ),
+                       ']'
+                      ) AS JSON)
+      END AS checklist_photos
+      
+      FROM checklist AS cl 
+      LEFT JOIN checklist_photos cp ON (cp.checklist_id = cl.checklist_id)
+      WHERE cl.users_id = ? 
+      GROUP BY cl.id 
+      ORDER BY cl.id DESC`;
+
+      conn.query(options, [users_id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
   },
 
   updateChecklist: async (id, newChecklist) => {
     let toBeUpdated = {};
-    let allowedCollumns = [`checklist_id`, `driver`, `team_service`, `plate`, `prisma`, `check_date`, `departure_time`, `return_time`, `km_departure`, `km_return`, `output_fuel_quantity`, `return_fuel_quantity`, `carpet`, `tire_iron`, `triangue`, `monkey`, `front_lighting_system`, `back_lighting_system`, `sirene`, `flashing`, `supply_card`, `crlv`, `glacier`, `etilometer`, `pneus`, `stereo`, `cones`, `cones_quantities`, `super_cones`, `super_cones_quantities`, `new_jersey`, `new_jersey_quantities`, `handle`, `handle_quantities`, `users_id`];
-    allowedCollumns.forEach(columnName => {
+    let allowedCollumns = [
+      `checklist_id`,
+      `driver`,
+      `team_service`,
+      `plate`,
+      `prisma`,
+      `check_date`,
+      `departure_time`,
+      `return_time`,
+      `km_departure`,
+      `km_return`,
+      `output_fuel_quantity`,
+      `return_fuel_quantity`,
+      `carpet`,
+      `tire_iron`,
+      `triangue`,
+      `monkey`,
+      `front_lighting_system`,
+      `back_lighting_system`,
+      `sirene`,
+      `flashing`,
+      `supply_card`,
+      `crlv`,
+      `glacier`,
+      `etilometer`,
+      `pneus`,
+      `stereo`,
+      `cones`,
+      `cones_quantities`,
+      `super_cones`,
+      `super_cones_quantities`,
+      `new_jersey`,
+      `new_jersey_quantities`,
+      `handle`,
+      `handle_quantities`,
+      `observations`,
+      `users_id`,
+    ];
+    allowedCollumns.forEach((columnName) => {
       if (columnName in newChecklist) {
         toBeUpdated[columnName] = newChecklist[columnName];
       }
@@ -278,7 +399,7 @@ module.exports = {
     });
   },
 
-  deleteChecklist: id => {
+  deleteChecklist: (id) => {
     return new Promise((resolve, reject) => {
       conn.query(
         "DELETE from checklist WHERE checklist_id = ?",
@@ -292,5 +413,5 @@ module.exports = {
         }
       );
     });
-  }
+  },
 };
