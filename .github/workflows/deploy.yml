@@ -16,7 +16,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }} # User of the server you want to ssh into
           
           script: |   
-            cd api-painelb
+            cd api-painelbr
             git pull origin main
             npm install
             npm stop 
