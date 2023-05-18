@@ -12,7 +12,11 @@ const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+<<<<<<< HEAD
     let id = req.body.occurrenceId; //1649330439029
+=======
+    let id = req.body.occurrenceId;
+>>>>>>> c1959a6322be6b65e152ee4e7785755463667ed1
     let dir = "./uploads/occurrence/" + id;
     try {
       if (!fs.existsSync(dir)) {
@@ -22,7 +26,10 @@ const storage = multer.diskStorage({
       console.error(err);
     }
     cb(null, dir);
+<<<<<<< HEAD
     //cb(null, path.join(__dirname, dir));
+=======
+>>>>>>> c1959a6322be6b65e152ee4e7785755463667ed1
   },
 
   filename: (req, file, cb) => {
@@ -43,7 +50,10 @@ const upload = multer({ storage: storage, fileFilter: filterImageFile });
 const uploadImage = upload.array("photos");
 
 router.post("/multiple-table", async (req, res) => {
+<<<<<<< HEAD
 
+=======
+>>>>>>> c1959a6322be6b65e152ee4e7785755463667ed1
   uploadImage(req, res, async function (err) {
     let occurrenceId = req.body.occurrenceId;
 

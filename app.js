@@ -58,6 +58,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+<<<<<<< HEAD
 // No início do arquivo
 /* const Redis = require('ioredis');
 
@@ -98,6 +99,8 @@ const cacheMiddleware = (req, res, next) => {
 app.use(cacheMiddleware);
  */
 
+=======
+>>>>>>> c1959a6322be6b65e152ee4e7785755463667ed1
 
 
 //app.listen(3000, () => console.log('Server ready'))
