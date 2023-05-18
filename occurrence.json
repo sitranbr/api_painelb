@@ -1,0 +1,58 @@
+{
+    "occurrence":{
+       "id":79,
+       "date":"30/06/2022",
+       "time":"8:24",
+       "address":"Rod. Br 316, km 4, crescente",
+       "users_id":3,
+       "perimeter":"Km 1 ao 4",
+       "has_victim":1,
+       "description":"Segundo relado de testemunhas, o condutor perdeu o controle do veículo. O mesmo foi socorrido pelo CBM.",
+       "has_witness":0,
+       "occurrence_id":1656588297428,
+       "occurrence_type":"Colisão"
+    },
+    "occurrence_photos":[
+       {
+          "id":492,
+          "name":"1656591051179_IMG-20220630-WA0004.jpg",
+          "photo":"http://api.sistran.app.br/uploads/occurrence/1656588297428/1656591051179_IMG-20220630-WA0004.jpg",
+          "photo_id":1656591051179,
+          "occurrence_id":1656588297428
+       }
+    ],
+    "occurrence_victim":[
+       {
+          "id":82,
+          "name":"Adarino Mendes Silva ",
+          "genre":"Masculino",
+          "address":"Conj. Providência, qd 12, casa 10",
+          "birthdate":"25/08/1985",
+          "victim_id":1656590983215,
+          "document_type":"CNH",
+          "occurrence_id":1656588297428,
+          "victim_status":"Leve",
+          "document_number":"00254125685"
+       }
+    ],
+    "occurrence_witness":[
+       
+    ],
+    "vehicle_conductor":[
+       {
+          "id":330,
+          "vehicle_id":1656588452889,
+          "driver_name":"Adarino Mendes Silva ",
+          "vehicle_type":"Automóvel",
+          "occurrence_id":1656588297428,
+          "plate_vehicle":"QDE4566",
+          "damage_category":"Pequena monta",
+          "doc_vehicle_type":"RENAVAM",
+          "driver_procedure":"Hospitalizado",
+          "vehicle_procedure":"Veículo removido",
+          "doc_vehicle_number":"0023456756",
+          "driver_document_type":"CNH",
+          "driver_document_number":"00254125685"
+       }
+    ]
+ }
