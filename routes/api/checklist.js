@@ -38,6 +38,7 @@ const upload = multer({ storage: storage, fileFilter: filterImageFile });
 const uploadImage = upload.array("photos");
 
 router.post("/", async (req, res) => {
+
   uploadImage(req, res, async function (err) {
     let id = req.body.checklistId;
     if (err instanceof multer.MulterError) {
@@ -76,6 +77,7 @@ router.post("/", async (req, res) => {
       }
     }
   });
+  
 });
 
 router.post("/list", (req, res) => {

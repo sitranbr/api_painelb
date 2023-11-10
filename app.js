@@ -5,6 +5,7 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 const fs = require("fs");
+const Redis = require('ioredis');
 
 var routes = require("./routes/index");
 var users = require("./routes/users");
@@ -26,9 +27,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json({limit: "1000mb"}));
 
-
 app.use(cookieParser());
-
 
 //app.use("/", routes);
 app.use("/users", users);
@@ -58,9 +57,8 @@ app.use(function(err, req, res, next) {
   });
 });
 
-<<<<<<< HEAD
 // No início do arquivo
-/* const Redis = require('ioredis');
+
 
 // Configuração do cliente Redis
 const redis = new Redis({
@@ -97,12 +95,7 @@ const cacheMiddleware = (req, res, next) => {
 
 // Use o middleware de cache no aplicativo
 app.use(cacheMiddleware);
- */
-
-=======
->>>>>>> c1959a6322be6b65e152ee4e7785755463667ed1
-
-
+ 
 //app.listen(3000, () => console.log('Server ready'))
 
 module.exports = app;
