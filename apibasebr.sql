@@ -295,7 +295,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `users_id`, `email`, `password`, `name`, `cpf`, `my_team`, `service_team`, `sector`) VALUES
 (11, 1, 'b@gmail.com', '202cb962ac59075b964b07152d234b70', 'Andorinhas', '', 'Charlie', 'Bravo', 'detran'),
-(12, 1618929787682, 'rimon.rsa@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 'Salauddin Gazi', 'ok', 'ok', 'ok', 'ok'),
+(12, 1618929787682, 'salomao@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 'Salomão Martins', 'ok', 'ok', 'ok', 'ok'),
 (13, 1627591108838, 'beldata@gmail.com', 'cfe5547fb85ed0217277411f02f3a636', 'Sandro', '454991522', 'Bravo', 'Charlie', 'Goftc');
 
 -- --------------------------------------------------------
