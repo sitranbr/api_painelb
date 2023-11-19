@@ -1,0 +1,36 @@
+name: painelb-api
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: echo Building the app
+
+  # deploy development
+  deploy_development:
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://api.sistran.app.br/api # ou ${{vars.URL}}
+    needs: build
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v2 # Use a versão mais recente de actions/checkout
+      - name: VPS Deployment
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{secrets.VPS_PRIVATE_KEY}}
+          ARGS: "-rlgoDzvc --delete"
+          SOURCE: "api-painelb"
+          REMOTE_HOST: ${{vars.REMOTE_HOST}}
+          REMOTE_USER: ${{vars.REMOTE_USER}}
+          REMOTE_PORT: ${{vars.REMOTE_PORT}}
+          TARGET: ${{vars.TARGET}} # /var/www/sistran.app.br/api

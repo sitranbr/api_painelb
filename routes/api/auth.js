@@ -24,7 +24,7 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
   let credential = req.body;
-  //console.log(credential);
+  //console.log("credential: " + credential.email);
   authService
     .login(credential)
     .then((results) => {
@@ -53,7 +53,7 @@ router.post("/login", (req, res) => {
         res.status(400).json({ message: "Email ou senha inválido!" });
       }
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(400).json({ message: "Email ou senha inválido!" });
     });
 });
@@ -64,6 +64,7 @@ router.get("/login", (req, res) => {
   authService
     .dologin(req.params.email, req.params.password)
     .then((results) => {
+      console.log("result:" + results);
       if (results.length === 1) {
         let result = results[0];
         let tokenData = {
@@ -88,7 +89,7 @@ router.get("/login", (req, res) => {
         res.status(400).json({ message: "Email ou senha inválido!" });
       }
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(400).json({ message: "Email ou senha inválido!" });
     });
 });

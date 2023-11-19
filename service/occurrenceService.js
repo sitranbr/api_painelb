@@ -1,6 +1,6 @@
 const conn = require("./../mysql");
 const fs = require("fs");
-const { options } = require("../app");
+//const { options } = require("../app");
 
 module.exports = {
   saveOccurrence: (occurrence) => {
